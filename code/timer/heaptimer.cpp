@@ -5,11 +5,15 @@
  */ 
 #include "heaptimer.h"
 
+// 向上建堆
 void HeapTimer::siftup_(size_t i) {
     assert(i >= 0 && i < heap_.size());
+    // 获取 父节点
     size_t j = (i - 1) / 2;
     while(j >= 0) {
+        //  如果父节点比当前还小。。break
         if(heap_[j] < heap_[i]) { break; }
+        // 减缓
         SwapNode_(i, j);
         i = j;
         j = (i - 1) / 2;
@@ -24,15 +28,23 @@ void HeapTimer::SwapNode_(size_t i, size_t j) {
     ref_[heap_[j].id] = j;
 } 
 
+//  向下建堆
 bool HeapTimer::siftdown_(size_t index, size_t n) {
     assert(index >= 0 && index < heap_.size());
     assert(n >= 0 && n <= heap_.size());
+    // 当前节点
     size_t i = index;
+    // 左节点
     size_t j = i * 2 + 1;
+    // 当左节点 < 最后节点
     while(j < n) {
+        // 如果有右节点，且 右节点  < 左边节点时候 j++ (获取更小的节点)
         if(j + 1 < n && heap_[j + 1] < heap_[j]) j++;
+        // 如果 当前节点 < 子节点 （不需要交换了，返回）
         if(heap_[i] < heap_[j]) break;
+        // 否则交换
         SwapNode_(i, j);
+        // 继续。。。
         i = j;
         j = i * 2 + 1;
     }

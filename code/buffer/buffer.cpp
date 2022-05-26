@@ -8,30 +8,38 @@
 Buffer::Buffer(int initBuffSize) : buffer_(initBuffSize), readPos_(0), writePos_(0) {}
 
 size_t Buffer::ReadableBytes() const {
+    // 当前写入的位置，减去当前读取的位置
     return writePos_ - readPos_;
 }
 size_t Buffer::WritableBytes() const {
+    // buff 大小 - 写入位置
     return buffer_.size() - writePos_;
 }
 
 size_t Buffer::PrependableBytes() const {
+    //  返回当前读的位置
     return readPos_;
 }
 
 const char* Buffer::Peek() const {
+    // 获取 当前指针
     return BeginPtr_() + readPos_;
 }
 
+
 void Buffer::Retrieve(size_t len) {
+    // 当前 + len
     assert(len <= ReadableBytes());
     readPos_ += len;
 }
 
 void Buffer::RetrieveUntil(const char* end) {
     assert(Peek() <= end );
+
     Retrieve(end - Peek());
 }
 
+//  重置
 void Buffer::RetrieveAll() {
     bzero(&buffer_[0], buffer_.size());
     readPos_ = 0;
@@ -83,7 +91,9 @@ void Buffer::EnsureWriteable(size_t len) {
     assert(WritableBytes() >= len);
 }
 
+// 这里会在 while 循环中读取，一直读到buff中
 ssize_t Buffer::ReadFd(int fd, int* saveErrno) {
+    // 4 个 字节
     char buff[65535];
     struct iovec iov[2];
     const size_t writable = WritableBytes();
@@ -101,14 +111,19 @@ ssize_t Buffer::ReadFd(int fd, int* saveErrno) {
         writePos_ += len;
     }
     else {
+        // 每次地区4个字节。。
+        // 扩容
         writePos_ = buffer_.size();
         Append(buff, len - writable);
     }
     return len;
 }
 
+// 暂无引用
 ssize_t Buffer::WriteFd(int fd, int* saveErrno) {
+    // 当前写入的位置，减去当前读取的位置
     size_t readSize = ReadableBytes();
+    // Peek = begin + readpos;
     ssize_t len = write(fd, Peek(), readSize);
     if(len < 0) {
         *saveErrno = errno;
@@ -119,6 +134,7 @@ ssize_t Buffer::WriteFd(int fd, int* saveErrno) {
 }
 
 char* Buffer::BeginPtr_() {
+    // 获取当前buff其实地址
     return &*buffer_.begin();
 }
 

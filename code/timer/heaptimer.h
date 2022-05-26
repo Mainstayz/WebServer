@@ -35,6 +35,7 @@ public:
 
     ~HeapTimer() { clear(); }
     
+    // 调整 某个节点
     void adjust(int id, int newExpires);
 
     void add(int id, int timeOut, const TimeoutCallBack& cb);
