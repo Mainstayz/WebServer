@@ -59,6 +59,7 @@ private:
     bool openLinger_;
     int timeoutMS_;  /* 毫秒MS */
     bool isClose_;
+    // 服务器的监听描述符
     int listenFd_;
     char* srcDir_;
     

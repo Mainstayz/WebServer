@@ -96,11 +96,15 @@ ssize_t HttpConn::write(int* saveErrno) {
 
 bool HttpConn::process() {
     request_.Init();
+    // 获取可读字节
     if(readBuff_.ReadableBytes() <= 0) {
+        //  处理失败
         return false;
     }
     else if(request_.parse(readBuff_)) {
         LOG_DEBUG("%s", request_.path().c_str());
+        // 初始化
+
         response_.Init(srcDir, request_.path(), request_.IsKeepAlive(), 200);
     } else {
         response_.Init(srcDir, request_.path(), false, 400);
@@ -119,5 +123,6 @@ bool HttpConn::process() {
         iovCnt_ = 2;
     }
     LOG_DEBUG("filesize:%d, %d  to %d", response_.FileLen() , iovCnt_, ToWriteBytes());
+    // 处理完成！
     return true;
 }

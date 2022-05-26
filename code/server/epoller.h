@@ -13,6 +13,7 @@
 #include <vector>
 #include <errno.h>
 
+// Epoller 封装
 class Epoller {
 public:
     explicit Epoller(int maxEvent = 1024);
